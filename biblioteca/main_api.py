@@ -1,10 +1,18 @@
 # main_api.py
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from typing import Optional
 from GestorBiblioteca import GestorBiblioteca
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(title="API Biblioteca")
+
+# modelos de Pydantic
+from pydantic import BaseModel, Field
+class PrestamoCreate(BaseModel):
+    id_usuario: str = Field(..., description="ID del usuario que realiza el préstamo", example="55E58A")
+    id_material: str = Field(..., description="ID del material a prestar", example="ABC123")
+
+
 
 # CORS
 app.add_middleware(
@@ -78,12 +86,35 @@ def eliminar_material(codigo: str):
 # ---------------- PRÉSTAMOS ----------------
 
 @app.post("/prestamos/")
-def agregar_prestamo(id_usuario: str, id_material: str):
-    exito = biblioteca.agregar_prestamo(id_usuario, id_material)
-    if not exito:
-        raise HTTPException(status_code=400, detail="No se pudo registrar el préstamo")
-    return {"mensaje": "Préstamo registrado"}
+async def crear_prestamo(prestamo: PrestamoCreate):
+    try:
+        biblioteca.agregar_prestamo(prestamo.id_usuario, prestamo.id_material)
+        return {"mensaje": "Préstamo registrado correctamente"}
 
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    
+"""
+@app.post("/prestamos/")
+async def crear_prestamo(request: Request):
+    try:
+        body = await request.json()
+        print(body)
+        id_usuario = body.get("id_usuario")
+        id_material = body.get("id_material")
+
+        if not id_usuario or not id_material:
+            raise HTTPException(status_code=422, detail="Faltan datos obligatorios")
+
+        biblioteca.agregar_prestamo(id_usuario, id_material)
+
+        return {"mensaje": "Préstamo registrado correctamente"}
+
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+"""
 @app.get("/prestamos/")
 def listar_prestamos():
     return biblioteca.listar_prestamos()

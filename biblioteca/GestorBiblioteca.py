@@ -5,8 +5,16 @@ from modelos import UsuarioDB, MaterialDB, PrestamoDB
 from datetime import datetime, timedelta
 import uuid
 
+import environ
+env = environ.Env()
+env.read_env(".env")
+db_url = env("db_url")
+
+db_url = "sqlite:///biblioteca.db"
+
+
 class GestorBiblioteca:
-    def __init__(self, db_url="sqlite:///biblioteca/biblioteca.db"):
+    def __init__(self, db_url=db_url):
         engine = create_engine(db_url)
         Session = sessionmaker(bind=engine)
         self.session = Session()
