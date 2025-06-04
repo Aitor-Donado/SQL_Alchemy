@@ -9,8 +9,8 @@ app = FastAPI(title="API Biblioteca")
 # modelos de Pydantic
 from pydantic import BaseModel, Field
 class PrestamoCreate(BaseModel):
-    id_usuario: str = Field(..., description="ID del usuario que realiza el préstamo", example="55E58A")
-    id_material: str = Field(..., description="ID del material a prestar", example="ABC123")
+    id_usuario: str = Field(example="55E58A")
+    id_material: str = Field(example="ABC123")
 
 
 
