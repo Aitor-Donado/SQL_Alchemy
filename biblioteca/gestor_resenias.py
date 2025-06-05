@@ -1,7 +1,11 @@
 from pymongo import MongoClient
 
+import environ
+env = environ.Env()
+env.read_env(".env")
 # Cadena de conexión de MongoDB Atlas
-connection_string = "mongodb+srv://aitordonado:MIFmoPVKGPBdTiiZ@cluster0.unmgt.mongodb.net/"
+connection_string = env("connection_string")
+
 
 # Conectar a la base de datos
 client = MongoClient(connection_string)
